@@ -1,3 +1,5 @@
+import math
+
 
 def q1():
     """
@@ -61,8 +63,8 @@ def q3(num):
     :return:
     """
     res = {}
-    for i in range(1, num+1):
-        res[i] = i*i
+    for i in range(1, num + 1):
+        res[i] = i * i
     print(res)
 
 
@@ -81,7 +83,7 @@ def q4():
     """
     user_input = input("$:")
     alist = user_input.split(',')
-    alist=list(alist)
+    alist = list(alist)
     atuple = tuple(alist)
     print(alist)
     print(atuple)
@@ -114,5 +116,31 @@ def q5():
 
 
 # -------------------------------------------------------------------------------------------
+def q6(l):
+    """
+    Question:
+    Write a program that calculates and prints the value according to the given formula:
+    Q = Square root of [(2 * C * D)/H]
+    Following are the fixed values of C and H:
+    C is 50. H is 30.
+    D is the variable whose values should be input to your program in a comma-separated sequence.
+    Example
+    Let us assume the following comma separated input sequence is given to the program:
+    100,150,180
+    The output of the program should be:
+    18,22,24
+    :return:
+    """
+    c = 50
+    h = 30
+    out = []
+    input = l.split(',')
+    for d in input:
+        q = math.sqrt(2*c*int(d)/h)
+        out.append(str(int(q)))
+    print(','.join(out))
+
+
+# -------------------------------------------------------------------------------------------
 if __name__ == '__main__':
-    q5()
+    q6('100,150,180')
