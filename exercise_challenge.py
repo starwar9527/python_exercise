@@ -91,7 +91,7 @@ def q4():
 class Q5Class:
 
     @staticmethod
-    def get_string(prompt):
+    def get_string(prompt='$:'):
         return input(prompt)
 
     @staticmethod
