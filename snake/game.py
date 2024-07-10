@@ -117,8 +117,8 @@ class Game:
         # 5. update ui and clock
         self._update_ui()
         self.clock.tick(SPEED)
-        # 6. return game over and score
-        return reward, game_over, self.score
+        # 6. return score and game over
+        return reward, self.score, game_over
 
     def _is_collision(self, pt=None):
         if pt is None:
