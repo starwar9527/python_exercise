@@ -1,4 +1,6 @@
-from game import Game
+import numpy as np
+
+from game import Game, BLOCK_SIZE, Point, Direction
 from model import Model
 from collections import deque
 import os
@@ -15,7 +17,49 @@ class Agent:
         self.model = None
 
     def get_state(self, game):
-        pass
+        pt = game.head
+        pt_left = Point(pt.x-BLOCK_SIZE, pt.y)
+        pt_right = Point(pt.x+BLOCK_SIZE, pt.y)
+        pt_up = Point(pt.x, pt.y-BLOCK_SIZE)
+        pt_down = Point(pt.x, pt.y+BLOCK_SIZE)
+
+        dl = game.direction == Direction.LEFT
+        dr = game.direction == Direction.RIGHT
+        dd = game.direction == Direction.DOWN
+        du = game.direction == Direction.UP
+
+        state = [
+            #straight danger
+            (dl and game.is_collision(pt_left)) or
+            (dr and game.is_collision(pt_right)) or
+            (dd and game.is_collision(pt_down)) or
+            (du and game.is_collision(pt_up)),
+
+            #right danger
+            (dl and game.is_collision(pt_up)) or
+            (dr and game.is_collision(pt_down)) or
+            (dd and game.is_collision(pt_left)) or
+            (du and game.is_collision(pt_right)),
+
+            #left danger
+            (dl and game.is_collision(pt_down)) or
+            (dr and game.is_collision(pt_up)) or
+            (dd and game.is_collision(pt_right)) or
+            (du and game.is_collision(pt_left)),
+
+            #move direction
+            dl,  # left
+            dr,  # right
+            du,  # up
+            dd,  # down
+
+            #food position
+            game.food.x < game.head.x,  # left
+            game.food.x > game.head.x,  # right
+            game.food.y < game.head.y,  # up
+            game.food.y > game.head.y   # down
+        ]
+        return np.array(state, dtype=int)
 
     def get_move(self, state):
         pass
