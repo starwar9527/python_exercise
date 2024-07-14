@@ -34,31 +34,31 @@ class Agent:
         du = game.direction == Direction.UP
 
         state = [
-            #straight danger
+            # straight danger
             (dl and game.is_collision(pt_left)) or
             (dr and game.is_collision(pt_right)) or
             (dd and game.is_collision(pt_down)) or
             (du and game.is_collision(pt_up)),
 
-            #right danger
+            # right danger
             (dl and game.is_collision(pt_up)) or
             (dr and game.is_collision(pt_down)) or
             (dd and game.is_collision(pt_left)) or
             (du and game.is_collision(pt_right)),
 
-            #left danger
+            # left danger
             (dl and game.is_collision(pt_down)) or
             (dr and game.is_collision(pt_up)) or
             (dd and game.is_collision(pt_right)) or
             (du and game.is_collision(pt_left)),
 
-            #move direction
+            # move direction
             dl,  # left
             dr,  # right
             du,  # up
             dd,  # down
 
-            #food position
+            # food position
             game.food.x < game.head.x,  # left
             game.food.x > game.head.x,  # right
             game.food.y < game.head.y,  # up
@@ -109,9 +109,10 @@ def train():
 
         agent.train_one_game_step(old_state, move, reward, new_state, done)
         if done:
-            #train all games, plot result
+            # train all games, plot result
             agent.n_games += 1
             agent.train_all_games()
+
 
 if __name__ == '__main__':
     train()
