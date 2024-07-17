@@ -77,7 +77,7 @@ class Agent:
         else:
             # use model for prediction
             state0 = torch.tensor(state, dtype=float)
-            action = self.model.predict(state0)
+            action = self.model(state0)
             move = torch.argmax(action).item()
             final_move[move] = 1
         return final_move
