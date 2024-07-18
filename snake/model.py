@@ -24,3 +24,46 @@ class Model(nn.Module):
         self.save(self.state_dict(), full_name)
 
 
+class QTrainer:
+    def __init__(self, model, lr, gamma):
+        self.lr = lr
+        self.gamma = gamma
+        self.model = model
+        self.optimizer = torch.optim.Adam(model.parameters(), lr=self.lr)
+        self.criterion = nn.MSELoss()
+
+    def train_one_step(self, state, action, reward, next_state, done):
+        # (n, x)
+        state = torch.tensor(state)
+        action = torch.tensor(action)
+        reward = torch.tensor(reward)
+        next_state = torch.tensor(next_state)
+        done = torch.tensor(done)
+
+        # (1, x)
+        if len(done.shape) == 1:
+            state = state.squeeze(0)
+            action = action.squeeze(0)
+            reward = reward.squeeze(0)
+            next_state = next_state.squeeze(0)
+            done = (done,)
+
+        # predicted Q value with current state
+        pred = self.model(state)
+
+        # Q_new = r + y * max(next_prediction Q value) -> only do this if not done, otherwise just set to reward
+        # pred.clone
+        # pred[argmax(action)] = Q_new
+        target = pred.clone()
+        for idx in range(len(done)):
+            Q_new = reward[idx]
+            if not done[idx]:
+                Q_new = reward[idx] + self.gamma * torch.max(self.model(next_state[idx]))
+
+            target[idx][torch.argmax(action).item()] = Q_new
+
+        self.optimizer.zero_grad()
+        loss = self.criterion(target, pred)
+        loss.backward()
+
+        self.optimizer.step()
