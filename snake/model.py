@@ -21,7 +21,7 @@ class Model(nn.Module):
         if not os.path.exists(folder):
             os.makedirs(folder)
         full_name = os.path.join(folder, file_name)
-        self.save(self.state_dict(), full_name)
+        torch.save(self.state_dict(), full_name)
 
 
 class QTrainer:
@@ -34,18 +34,17 @@ class QTrainer:
 
     def train_one_step(self, state, action, reward, next_state, done):
         # (n, x)
-        state = torch.tensor(state)
-        action = torch.tensor(action)
-        reward = torch.tensor(reward)
-        next_state = torch.tensor(next_state)
-        done = torch.tensor(done)
+        state = torch.tensor(state, dtype=torch.float)
+        action = torch.tensor(action, dtype=torch.float)
+        reward = torch.tensor(reward, dtype=torch.float)
+        next_state = torch.tensor(next_state, dtype=torch.float)
 
         # (1, x)
-        if len(done.shape) == 1:
-            state = state.squeeze(0)
-            action = action.squeeze(0)
-            reward = reward.squeeze(0)
-            next_state = next_state.squeeze(0)
+        if len(state.shape) == 1:
+            state = torch.unsqueeze(state, 0)
+            action = torch.unsqueeze(action, 0)
+            reward = torch.unsqueeze(reward, 0)
+            next_state = torch.unsqueeze(next_state, 0)
             done = (done,)
 
         # predicted Q value with current state
@@ -59,8 +58,10 @@ class QTrainer:
             Q_new = reward[idx]
             if not done[idx]:
                 Q_new = reward[idx] + self.gamma * torch.max(self.model(next_state[idx]))
+            else:
+                print(idx)
 
-            target[idx][torch.argmax(action).item()] = Q_new
+            target[idx][torch.argmax(action[idx]).item()] = Q_new
 
         self.optimizer.zero_grad()
         loss = self.criterion(target, pred)
