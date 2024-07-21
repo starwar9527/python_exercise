@@ -34,7 +34,7 @@ BLUE2 = (0, 200, 0)
 BLACK = (0, 0, 0)
 
 BLOCK_SIZE = 20
-SPEED = 45
+SPEED = 35
 
 
 class Game:
@@ -110,7 +110,7 @@ class Game:
         if self.head == self.food:
             self.score += 1
             self._place_food()
-            reward = 10
+            reward = 20
         else:
             self.snake.pop()
 

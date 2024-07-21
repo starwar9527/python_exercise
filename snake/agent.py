@@ -67,10 +67,11 @@ class Agent:
         ]
         return np.array(state, dtype=int)
 
-    def get_move(self, state):
+    def get_move(self, state, loaded=False):
         # random move: tradeoff exploration/exploitation
         # random move or prediction from model
         final_move = [0, 0, 0]
+        #if not loaded and random.randint(0, 200) < 80 - self.n_games:
         if random.randint(0, 200) < 80 - self.n_games:
             # if the number of games is small, then random
             move = random.randint(0, 2)
@@ -105,9 +106,10 @@ def train():
     record = 0
     agent = Agent()
     game = Game()
+    loaded = agent.model.read_saved()
     while True:
         old_state = agent.get_state(game)
-        move = agent.get_move(old_state)
+        move = agent.get_move(old_state, loaded)
         reward, score, done = game.play_step(move)
         new_state = agent.get_state(game)
         agent.remember(old_state, move, reward, new_state, done)

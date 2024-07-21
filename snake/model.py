@@ -11,6 +11,13 @@ class Model(nn.Module):
         self.linear1 = nn.Linear(input_layer, hidden_layer)
         self.linear2 = nn.Linear(hidden_layer, output_layer)
 
+        folder = './Model'
+        if not os.path.exists(folder):
+            os.makedirs(folder)
+        file_name = 'model.pth'
+        self.model_path = os.path.join(folder, file_name)
+
+
     def forward(self, x):
         x = F.relu(self.linear1(x))
         x = self.linear2(x)
@@ -22,6 +29,14 @@ class Model(nn.Module):
             os.makedirs(folder)
         full_name = os.path.join(folder, file_name)
         torch.save(self.state_dict(), full_name)
+
+    def read_saved(self):
+        # get saved time of the model
+        if os.path.exists(self.model_path):
+            # Load the state dictionary into the model
+            self.load_state_dict(torch.load(self.model_path))
+            return True
+        return False
 
 
 class QTrainer:
