@@ -73,8 +73,6 @@ class QTrainer:
             Q_new = reward[idx]
             if not done[idx]:
                 Q_new = reward[idx] + self.gamma * torch.max(self.model(next_state[idx]))
-            else:
-                print(idx)
 
             target[idx][torch.argmax(action[idx]).item()] = Q_new
 
