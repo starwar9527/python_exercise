@@ -7,28 +7,40 @@ import time
 controller = Controller()
 
 
-def fix_text():
-    pass
+def fix_text(text):
+    return text[::-1]
 
 
 def fix_selected_text():
     # 1. copy text to clipboard
     with controller.pressed(Key.ctrl):
         controller.tap('c')
+
     # 2. get the text from clipboard
     time.sleep(0.1)
     text = pyperclip.paste()
-    print(text)
     # 3. fix the text
+    text = fix_text(text)
+    # print(text)
     # 4. copy text back to clipboard
-    # pyperclip.copy('text to be copied back to clipboard')
+    pyperclip.copy(text)
     # 5. insert text
-
+    with controller.pressed(Key.ctrl):
+        controller.tap('v')
 
 # fix the selected line
 def on_activate_f11():
     # select the line
+    controller.press(Key.home)
+    controller.press(Key.shift)
+    controller.press(Key.end)
+
+    controller.release(Key.home)
+    controller.release(Key.shift)
+    controller.release(Key.end)
+
     # fix the selected text
+    fix_selected_text()
     print('f11 pressed')
 
 
