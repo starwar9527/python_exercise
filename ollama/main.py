@@ -2,13 +2,34 @@ from pynput import keyboard
 from pynput.keyboard import Controller, Key
 import pyperclip
 import time
-
+import httpx
+from string import Template
 
 controller = Controller()
 
+HOST = 'http://localhost:11434/api/generate'
+CONFIG = {"model": "mistral:instruct",
+          "keep_alive": "5m",
+          "stream": False
+          }
+PROMPT_TEMPLATE = Template(
+    """Fix all typos, casing and punctuation in this text, but preserve all new line characters:
+    
+    $text
+    
+    Return only the corrected text, don't include a preamble.
+    """)
+
 
 def fix_text(text):
-    return text[::-1]
+    prompt = PROMPT_TEMPLATE.substitute(text=text)
+    response = httpx.post(HOST,
+                          json={"prompt": prompt, **CONFIG},
+                          headers={"Content-Type": "application/json"},
+                          timeout=10)
+    if response.status_code != 200:
+        return None
+    return response.json()["response"].strip()
 
 
 def fix_selected_text():
@@ -28,6 +49,7 @@ def fix_selected_text():
     with controller.pressed(Key.ctrl):
         controller.tap('v')
 
+
 # fix the selected line
 def on_activate_f11():
     # select the line
@@ -41,7 +63,6 @@ def on_activate_f11():
 
     # fix the selected text
     fix_selected_text()
-    print('f11 pressed')
 
 
 # fix the selected text
@@ -54,10 +75,3 @@ with keyboard.GlobalHotKeys({
     '<65480>': on_activate_f11,
     '<65481>': on_activate_f12}) as h:
     h.join()
-"""
-curl http://localhost:11434/api/generate -d '{
-    "model":  "mistral:instruct",
-    "prompt": "Why is the sky blue?",
-    "stream": False
-}'
-"""
