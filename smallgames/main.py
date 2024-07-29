@@ -1,3 +1,4 @@
+from StonePaperScissor import stone_paper_scissor
 
 while True:
     id = input('Please select one of the games:\n'
@@ -10,6 +11,7 @@ while True:
         print('Guess selected')
     elif id == '2':
         print('2 selected')
+        stone_paper_scissor()
     elif id == '3':
         print('3')
     elif id == '4':
