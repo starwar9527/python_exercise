@@ -2,12 +2,13 @@ from StonePaperScissor import stone_paper_scissor
 from tictactoe import TicTacToe
 
 while True:
-    id = input('Please select one of the games:\n'
-               '1. Guess\n'
-               '2. StonePaperScissor\n'
-               '3. Straight4\n'
-               '4. Worble\n'
-               '5. TicTacToe\n')
+    text = """Please select one of the games (press a number or 'q' to quit):
+               1. Guess
+               2. StonePaperScissor
+               3. Straight4
+               4. Worble
+               5. TicTacToe \n"""
+    id = input(text)
     if id == '1':
         print('Guess selected')
     elif id == '2':
@@ -20,7 +21,6 @@ while True:
     elif id == '5':
         game = TicTacToe()
         game.play()
-    else:
-        print('None of the games is selected, exit')
+    elif id == 'q':
         break
 
