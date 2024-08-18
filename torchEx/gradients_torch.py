@@ -1,31 +1,40 @@
 import numpy as np
+import torch
+import torch.nn as nn
 # y = w*x, for w = 2
 
-a = np.array([1, 2, 3, 4, 5], dtype=np.float32)
-b = np.array([2, 4, 6, 8, 10], dtype=np.float32)
-w = 0
-iter = 10
+a = torch.tensor([[1], [2], [3], [4]], dtype=torch.float32)
+b = torch.tensor([[2], [4], [6], [8]], dtype=torch.float32)
+
+iter = 100
 learning_rate = 0.01
+n_samples, n_features = a.shape
+print(f'{n_samples}, {n_features}')
 
-def predict(x):
-    return w * x
+loss = nn.MSELoss()
 
-# MSE
-def loss(y_p, y):
-    return ((y_p-y)**2).mean()
+model = nn.Linear(in_features = n_features, out_features = n_features)
 
-# loss gradient with respect to weight
-# 1/N * 2 *(w*x - y)*x
-def grad(x, y_p, y):
-    return np.dot(2.0*(y_p-y), x).mean()
+optimizer = torch.optim.SGD(model.parameters(), lr= learning_rate)
 
-test = 6
-print(f'test before training is {predict(test)}')
+test = torch.tensor([5], dtype=torch.float32)
+print(f'test before training is {model(test).item():.3f}')
 
 # training
 for epoch in range(iter):
-    y_p = predict(a)
+    y_p = model(a)
+    #print(f'y_p.shape = {y_p.shape}')
+    #print(f'a.shape = {a.shape}')
+    #print(f'b.shape = {b.shape}')
     l = loss(y_p, b)
-    w -= learning_rate*grad(a, y_p, b)
-    print(f'epoch {epoch}, with loss {l:.3f}, weight {w:.5f}, test is {predict(test):.5f}')
-    #print(f'epoch {epoch}, with loss {l:.8f}, weight {w:.5f}')
+    l.backward()
+    optimizer.step()
+
+    optimizer.zero_grad()
+
+    w, _ = model.parameters()
+
+    if epoch % 10 == 0:
+        print(f'epoch {epoch}, with loss {l:.3f}, weight {w[0][0].item():.5f}, predict is {model(test).item():.3f}')
+        #print(f'epoch {epoch}, with loss {l:.3f}')
+        #print(f'epoch {epoch}, with loss {l:.8f}, weight {w:.5f}')
