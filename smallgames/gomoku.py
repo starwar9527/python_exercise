@@ -2,15 +2,18 @@ class Gomoku:
     def __init__(self):
         self.row = 15
         self.column = 15
-        self.pieces = [''] * self.row * self.column
+        self.pieces = [' '] * self.row * self.column
 
     def play(self):
         pass
 
     def draw_pieces(self):
+        # for i in range(225):
+        #    if i % 2 == 0:
+        #        self.pieces[i] = 'O'
         for i in range(self.row):
-            row = self.pieces[row * self.column: (row + 1) * self.column]
-            row = ''.join(row)
+            row = self.pieces[i * self.column: (i + 1) * self.column]
+            row = '  '.join(row)
             print(row)
 
     def set_piece(self, i, j, c):
