@@ -1,3 +1,5 @@
+import io
+import sys
 import unittest
 import gomoku
 
@@ -90,7 +92,7 @@ class TestGomoku(unittest.TestCase):
         self.assertTrue(self.game.win_along_dir(1, -1, 2, 2, 'X'))
         self.assertTrue(self.game.win_along_dir(1, -1, 3, 1, 'X'))
         self.assertTrue(self.game.win_along_dir(1, -1, 4, 0, 'X'))
-        
+
     def test_win(self):
         self.game.set_piece(0, 1, 'X')
         self.game.set_piece(0, 2, 'X')
@@ -157,3 +159,43 @@ class TestGomoku(unittest.TestCase):
         self.assertEqual(pos, 2)
         pos = self.game.get_last_pos_along_dir(-1, -1, 3, 3, 'X')
         self.assertEqual(pos, 3)
+
+    def test_get_input_pair(self):
+        sys.stdin = io.StringIO("1 2\n)")
+        a, b = gomoku.Gomoku.get_input_pair()
+        self.assertEqual(1, a)
+        self.assertEqual(2, b)
+
+    def test_play(self):
+        # Redirect stdin
+        sys.stdin = io.StringIO("1 2\n3 4\n)")
+        # steps = self.game.play()
+        # self.assertEqual([(1, 2), (3, 4)], steps)
+
+    def test_all_filled(self):
+        self.game.reset_board()
+        self.assertFalse(self.game.all_filled())
+
+        for i in range(15):
+            for j in range(15):
+                self.game.set_piece(i, j, 'w')
+        self.assertTrue(self.game.all_filled())
+
+        self.game.set_piece(0, 0, ' ')
+        self.assertFalse(self.game.all_filled())
+
+    def test_valid_position(self):
+        self.game.reset_board()
+        self.assertTrue(self.game.valid_position(0, 0))
+
+        self.assertFalse(self.game.valid_position(-1, 0))
+        self.assertFalse(self.game.valid_position(0, -1))
+        self.assertFalse(self.game.valid_position(-1, -1))
+        self.assertFalse(self.game.valid_position(15, 0))
+        self.assertFalse(self.game.valid_position(0, 15))
+        self.assertFalse(self.game.valid_position(15, 15))
+
+        self.game.set_piece(4, 5, 'W')
+        self.assertFalse(self.game.valid_position(4, 5))
+        self.game.set_piece(4, 5, ' ')
+        self.assertTrue(self.game.valid_position(4, 5))

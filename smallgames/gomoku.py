@@ -1,11 +1,69 @@
+import random
+
+
 class Gomoku:
     def __init__(self):
         self.row = 15
         self.column = 15
+        # user is white
+        self.white = 'X'
+        # computer is black
+        self.black = 'O'
         self.pieces = [' '] * self.row * self.column
 
+    @staticmethod
+    def get_input_pair():
+        while True:
+            line = input().strip()
+            try:
+                a, b = map(int, line.split())
+                return a, b
+            except ValueError:
+                print("Invalid input, please enter two integers separated by space.")
+
     def play(self):
-        pass
+
+        while True:
+            # get user's move
+            print("Please input your position:")
+            a, b = self.get_input_pair()
+            while not self.valid_position(a, b):
+                print("Invalid input. Please enter a valid integer.")
+                a, b = self.get_input_pair()
+
+            # set user's move
+            self.set_piece(a, b, self.white)
+            self.draw_pieces()
+
+            # exits if user wins
+            if self.win(a, b, self.white):
+                print('You win!')
+                self.draw_pieces()
+                break
+            elif self.all_filled():
+                print('Tie')
+                self.draw_pieces()
+                break
+
+            # get computer's move
+            cm = random.sample(range(0, self.row), 2)
+            while self.valid_position(cm[0], cm[1]):
+                cm = random.sample(range(0, self.row), 2)
+
+            # set computer's move
+            self.set_piece(cm[0], cm[1], self.black)
+
+            # exits if computer wins
+            if self.win(cm[0], cm[1], self.black):
+                print('You lose.')
+                self.draw_pieces()
+                break
+            elif self.all_filled():
+                print('Tie')
+                self.draw_pieces()
+                break
+            else:
+                self.draw_pieces()
 
     def draw_pieces(self):
         # for i in range(225):
@@ -62,3 +120,15 @@ class Gomoku:
 
     def reset_board(self):
         self.pieces = [' '] * self.row * self.column
+
+    def all_filled(self):
+        for i in range(len(self.pieces)):
+            if self.pieces[i] == ' ':
+                return False
+        return True
+
+    def valid_position(self, i, j):
+        if 0 <= i < self.row and 0 <= j < self.column and self.get_piece(i, j) == ' ':
+            return True
+        else:
+            return False
