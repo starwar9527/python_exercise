@@ -109,13 +109,13 @@ class TestGomoku(unittest.TestCase):
         self.game.reset_board()
         for i in range(15):
             for j in range(15):
-                self.assertEqual(self.game.get_piece(i, j), ' ')
+                self.assertEqual(self.game.get_piece(i, j), self.game.empty_char)
 
         self.game.set_piece(0, 2, 'X')
         self.assertEqual(self.game.get_piece(0, 2), 'X')
 
         self.game.reset_board()
-        self.assertEqual(self.game.get_piece(0, 2), ' ')
+        self.assertEqual(self.game.get_piece(0, 2), self.game.empty_char)
 
     def test_get_last_pos_along_dir(self):
         # test along columns
@@ -186,7 +186,7 @@ class TestGomoku(unittest.TestCase):
                 self.game.set_piece(i, j, 'w')
         self.assertTrue(self.game.all_filled())
 
-        self.game.set_piece(0, 0, ' ')
+        self.game.set_piece(0, 0, self.game.empty_char)
         self.assertFalse(self.game.all_filled())
 
     def test_valid_position(self):
@@ -202,5 +202,5 @@ class TestGomoku(unittest.TestCase):
 
         self.game.set_piece(4, 5, 'W')
         self.assertFalse(self.game.valid_position(4, 5))
-        self.game.set_piece(4, 5, ' ')
+        self.game.set_piece(4, 5, self.game.empty_char)
         self.assertTrue(self.game.valid_position(4, 5))

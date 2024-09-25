@@ -9,7 +9,8 @@ class Gomoku:
         self.white = 'X'
         # computer is black
         self.black = 'O'
-        self.pieces = [' '] * self.row * self.column
+        self.empty_char = '-'
+        self.pieces = [self.empty_char] * self.row * self.column
 
     @staticmethod
     def get_input_pair():
@@ -77,10 +78,16 @@ class Gomoku:
         # for i in range(225):
         #    if i % 2 == 0:
         #        self.pieces[i] = 'O'
+        head = '  '
+        for j in range(self.column):
+            head += f'{j:2} '
+        print(head)
+
         for i in range(self.row):
             row = self.pieces[i * self.column: (i + 1) * self.column]
-            row = '  '.join(row)
+            row = f'{i:2} '+'  '.join(row)
             print(row)
+        print('\n')
 
     def assert_valid_position(self, i, j):
         if i < 0 or i > self.row - 1:
@@ -127,16 +134,16 @@ class Gomoku:
         return pos
 
     def reset_board(self):
-        self.pieces = [' '] * self.row * self.column
+        self.pieces = [self.empty_char] * self.row * self.column
 
     def all_filled(self):
         for i in range(len(self.pieces)):
-            if self.pieces[i] == ' ':
+            if self.pieces[i] == self.empty_char:
                 return False
         return True
 
     def valid_position(self, i, j):
-        if 0 <= i < self.row and 0 <= j < self.column and self.get_piece(i, j) == ' ':
+        if 0 <= i < self.row and 0 <= j < self.column and self.get_piece(i, j) == self.empty_char:
             return True
         else:
             return False
