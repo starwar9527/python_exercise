@@ -13,7 +13,8 @@ while True:
     if id == '1':
         print('Gomoku selected')
         game = Gomoku()
-        game.draw_pieces()
+        # game.draw_pieces()
+        game.play()
     elif id == '2':
         print('2 selected')
         stone_paper_scissor()

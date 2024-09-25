@@ -26,14 +26,14 @@ class Gomoku:
                 print("Invalid input, please enter two integers separated by space.")
 
     def play(self):
-
+        self.draw_board()
         while True:
             # get user's move
             print("Please input your position:")
             a, b = self.get_input_pair()
             if a == 'q':
                 print('You lose, because you quit.')
-                self.draw_pieces()
+                self.draw_board()
                 break
 
             while not self.valid_position(a, b):
@@ -42,16 +42,16 @@ class Gomoku:
 
             # set user's move
             self.set_piece(a, b, self.white)
-            self.draw_pieces()
+            self.draw_board()
 
             # exits if user wins
             if self.win(a, b, self.white):
                 print('You win!')
-                self.draw_pieces()
+                self.draw_board()
                 break
             elif self.all_filled():
                 print('Tie')
-                self.draw_pieces()
+                self.draw_board()
                 break
 
             # get computer's move
@@ -65,16 +65,16 @@ class Gomoku:
             # exits if computer wins
             if self.win(cm[0], cm[1], self.black):
                 print('You lose.')
-                self.draw_pieces()
+                self.draw_board()
                 break
             elif self.all_filled():
                 print('Tie')
-                self.draw_pieces()
+                self.draw_board()
                 break
             else:
-                self.draw_pieces()
+                self.draw_board()
 
-    def draw_pieces(self):
+    def draw_board(self):
         # for i in range(225):
         #    if i % 2 == 0:
         #        self.pieces[i] = 'O'
