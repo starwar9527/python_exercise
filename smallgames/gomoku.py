@@ -15,6 +15,9 @@ class Gomoku:
     def get_input_pair():
         while True:
             line = input().strip()
+
+            if line.lower() == 'q':
+                return 'q', 0
             try:
                 a, b = map(int, line.split())
                 return a, b
@@ -27,6 +30,11 @@ class Gomoku:
             # get user's move
             print("Please input your position:")
             a, b = self.get_input_pair()
+            if a == 'q':
+                print('You lose, because you quit.')
+                self.draw_pieces()
+                break
+
             while not self.valid_position(a, b):
                 print("Invalid input. Please enter a valid integer.")
                 a, b = self.get_input_pair()
@@ -47,7 +55,7 @@ class Gomoku:
 
             # get computer's move
             cm = random.sample(range(0, self.row), 2)
-            while self.valid_position(cm[0], cm[1]):
+            while not self.valid_position(cm[0], cm[1]):
                 cm = random.sample(range(0, self.row), 2)
 
             # set computer's move

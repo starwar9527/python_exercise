@@ -161,16 +161,21 @@ class TestGomoku(unittest.TestCase):
         self.assertEqual(pos, 3)
 
     def test_get_input_pair(self):
-        sys.stdin = io.StringIO("1 2\n)")
+        sys.stdin = io.StringIO("1 2\nq\n)")
         a, b = gomoku.Gomoku.get_input_pair()
         self.assertEqual(1, a)
         self.assertEqual(2, b)
 
+        a, b = gomoku.Gomoku.get_input_pair()
+        self.assertEqual('q', a)
+        self.assertEqual(0, b)
+
     def test_play(self):
         # Redirect stdin
-        sys.stdin = io.StringIO("1 2\n3 4\n)")
-        # steps = self.game.play()
-        # self.assertEqual([(1, 2), (3, 4)], steps)
+        sys.stdin = io.StringIO("1 2\nq\n)")
+        self.game.play()
+        c = self.game.get_piece(1, 2)
+        self.assertEqual('X', c)
 
     def test_all_filled(self):
         self.game.reset_board()
