@@ -19,6 +19,12 @@ class Model(nn.Module):
 
 
     def forward(self, x):
+        """
+        return the Q_value vector of the state 'x'. the returned value is a vector,
+                e.g. if return (9.6, 5.6, 4.3), i.e. for action (1, 0, 0) the Q_value
+                is 9.6, for action (0, 1, 0) the Q_value is 5.6, for action (0, 0, 1)
+                the Q_value is 4.3
+        """
         x = F.relu(self.linear1(x))
         x = self.linear2(x)
         return x
