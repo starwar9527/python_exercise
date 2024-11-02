@@ -13,9 +13,13 @@ BG_COLOR = (230, 200, 150)  # Background color of the board
 LINE_COLOR = (0, 0, 0)      # Color of grid lines
 BLACK_COLOR = (0, 0, 0)     # Color of black pieces
 WHITE_COLOR = (255, 255, 255) # Color of white pieces
+TEXT_COLOR = (255, 0, 0)
 
 # Initialize Pygame
 pygame.init()
+
+# Fonts
+font = pygame.font.SysFont(None, 48)
 
 class Gomoku:
     def __init__(self):
@@ -103,6 +107,22 @@ class Gomoku:
         else:
             raise ValueError(f"current_player is {self.current_player}, not valid")
 
+    # Function to display the winning mess
+    # age
+    def show_winner_message(self, winner):
+        # Create the winning text surface
+        text = f"{winner} wins!"
+        text_surface = font.render(text, True, TEXT_COLOR)
+        text_rect = text_surface.get_rect(center=(self.screen.get_width() // 2, self.screen.get_height() // 2))
+
+        # Draw a rectangle "popup" background behind the text
+        pygame.draw.rect(self.screen, (255, 255, 255), text_rect.inflate(20, 20))  # White rectangle background
+        self.screen.blit(text_surface, text_rect)
+        pygame.display.flip()
+
+        # Pause for a moment to show the message
+        pygame.time.delay(2000)  # Display for 2 seconds
+
     def play(self):
         while True:
             game_end = False
@@ -124,18 +144,19 @@ class Gomoku:
                     if self.valid_position(row, col):
                         self.set_piece(row, col, self.get_color())
                         self.draw_board()
+                        winner = 'Black'
                         if self.win(row, col, self.get_color()):
                             if self.current_player == 1:
                                 print('Black win!')
                             elif self.current_player == -1:
                                 print('White win!')
+                                winner = 'White'
                             game_end = True
                         elif self.all_filled():
                             print('Tie')
                             game_end = True
                         if game_end:
-                            pygame.display.flip()
-                            pygame.time.delay(2000)  # Pause for 2 seconds
+                            self.show_winner_message(winner)
                             pygame.quit()
                             sys.exit()
 
