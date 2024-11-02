@@ -1,51 +1,37 @@
 import random
 import pygame
-from enum import Enum
-from collections import namedtuple
-import numpy as np
+import sys
 
+# Initialize constants
+BOARD_SIZE = 15           # 15x15 board
+CELL_SIZE = 40            # Size of each cell in pixels
+MARGIN = 20               # Margin around the board
+WINDOW_SIZE = BOARD_SIZE * CELL_SIZE + MARGIN * 2
+
+# Colors
+BG_COLOR = (230, 200, 150)  # Background color of the board
+LINE_COLOR = (0, 0, 0)      # Color of grid lines
+BLACK_COLOR = (0, 0, 0)     # Color of black pieces
+WHITE_COLOR = (255, 255, 255) # Color of white pieces
+
+# Initialize Pygame
 pygame.init()
-font = pygame.font.Font('arial.ttf', 25)
-
-
-# font = pygame.font.SysFont('arial', 25)
-
-# reset
-# reward
-# direction = game(action)
-# is_collision
-# game_iteration
-
-class Direction(Enum):
-    RIGHT = 1
-    LEFT = 2
-    UP = 3
-    DOWN = 4
-
-
-Point = namedtuple('Point', 'x, y')
-
-# rgb colors
-WHITE = (255, 255, 255)
-RED = (200, 0, 0)
-BLUE1 = (0, 0, 255)
-# BLUE2 = (0, 100, 255)
-BLUE2 = (0, 200, 0)
-BLACK = (0, 0, 0)
-
-BLOCK_SIZE = 20
-SPEED = 35
 
 class Gomoku:
     def __init__(self):
-        self.row = 15
-        self.column = 15
+        self.row = BOARD_SIZE
+        self.column = BOARD_SIZE
         # user is white
         self.white = 'X'
         # computer is black
         self.black = 'O'
         self.empty_char = '-'
         self.pieces = [self.empty_char] * self.row * self.column
+        # two players, 1 or -1. 1 for black, -1 for white
+        self.current_player = 1
+
+        self.screen = pygame.display.set_mode((WINDOW_SIZE, WINDOW_SIZE))
+        pygame.display.set_caption("Gomoku")
 
     @staticmethod
     def get_input_pair():
@@ -60,7 +46,7 @@ class Gomoku:
             except ValueError:
                 print("Invalid input, please enter two integers separated by space.")
 
-    def play(self):
+    def play_step(self):
         self.draw_board()
         while True:
             # get user's move
@@ -109,7 +95,88 @@ class Gomoku:
             else:
                 self.draw_board()
 
+    def get_color(self):
+        if self.current_player == 1:
+            return self.black
+        elif self.current_player == -1:
+            return self.white
+        else:
+            raise ValueError(f"current_player is {self.current_player}, not valid")
+
+    def play(self):
+        while True:
+            game_end = False
+            self.draw_board()
+            # Event handling
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    # Convert mouse position to board row/col
+                    x, y = event.pos
+                    col = (x - MARGIN + CELL_SIZE // 2) // CELL_SIZE
+                    row = (y - MARGIN + CELL_SIZE // 2) // CELL_SIZE
+
+                    # Make sure it's a valid board position and the cell is empty
+                    #if 0 <= row < BOARD_SIZE and 0 <= col < BOARD_SIZE and board[row][col] == 0:
+                    if self.valid_position(row, col):
+                        self.set_piece(row, col, self.get_color())
+                        self.draw_board()
+                        if self.win(row, col, self.get_color()):
+                            if self.current_player == 1:
+                                print('Black win!')
+                            elif self.current_player == -1:
+                                print('White win!')
+                            game_end = True
+                        elif self.all_filled():
+                            print('Tie')
+                            game_end = True
+                        if game_end:
+                            pygame.display.flip()
+                            pygame.time.delay(2000)  # Pause for 2 seconds
+                            pygame.quit()
+                            sys.exit()
+
+                        self.current_player *= -1  # Switch player
+
+            pygame.display.flip()
+
     def draw_board(self):
+        self.screen.fill(BG_COLOR)
+        for row in range(BOARD_SIZE):
+            # Draw horizontal lines
+            pygame.draw.line(
+                self.screen, LINE_COLOR,
+                (MARGIN, MARGIN + row * CELL_SIZE),
+                (MARGIN + (BOARD_SIZE - 1) * CELL_SIZE, MARGIN + row * CELL_SIZE),
+                1
+            )
+            # Draw vertical lines
+            pygame.draw.line(
+                self.screen, LINE_COLOR,
+                (MARGIN + row * CELL_SIZE, MARGIN),
+                (MARGIN + row * CELL_SIZE, MARGIN + (BOARD_SIZE - 1) * CELL_SIZE),
+                1
+            )
+            # Draw stones from the board state
+            for row in range(BOARD_SIZE):
+                for col in range(BOARD_SIZE):
+                    ind = row * BOARD_SIZE + col
+                    if self.pieces[ind] == self.black:
+                        self.draw_stone(row, col, BLACK_COLOR)
+                    elif self.pieces[ind] == self.white:
+                        self.draw_stone(row, col, WHITE_COLOR)
+
+
+    # Draw a stone on the board
+    def draw_stone(self, row, col, color):
+        x = MARGIN + col * CELL_SIZE
+        y = MARGIN + row * CELL_SIZE
+        pygame.draw.circle(self.screen, color, (x, y), CELL_SIZE // 2 - 2)
+
+    def draw_board_c(self):
         # for i in range(225):
         #    if i % 2 == 0:
         #        self.pieces[i] = 'O'
