@@ -1,6 +1,7 @@
 import random
 import pygame
 import sys
+import torch
 
 # Initialize constants
 BOARD_SIZE = 15           # 15x15 board
@@ -49,6 +50,19 @@ class Gomoku:
                 return a, b
             except ValueError:
                 print("Invalid input, please enter two integers separated by space.")
+
+    def get_state(self):
+        state = [0] * BOARD_SIZE * BOARD_SIZE
+        for i in range(BOARD_SIZE):
+            for j in range(BOARD_SIZE):
+                ind = i * self.row + j
+                if self.get_piece(i, j) == self.black:
+                    state[ind] = 1
+                elif self.get_piece(i, j) == self.white:
+                    state[ind] = 0
+        return state
+
+
 
     def play_step(self):
         self.draw_board()
@@ -164,6 +178,39 @@ class Gomoku:
 
             pygame.display.flip()
 
+    def play_onestep_ai(self, move):
+            game_over = False
+            reward = 0
+            self.draw_board()
+            # Event handling
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+
+            # Convert move to board row/col
+
+            # Find the index of the maximum value
+            ind = move.index(max(move))
+            row, col = divmod(ind, BOARD_SIZE)
+
+            if self.valid_position(row, col):
+                self.set_piece(row, col, self.get_color())
+                self.draw_board()
+                if self.win(row, col, self.get_color()):
+                    game_over = True
+                    reward += 1
+                    pygame.display.flip()
+
+                    return reward, game_over
+
+                self.current_player *= -1  # Switch player
+            else:
+                reward -= 10
+
+            pygame.display.flip()
+            return reward, game_over
+
     def draw_board(self):
         self.screen.fill(BG_COLOR)
         for row in range(BOARD_SIZE):
@@ -258,6 +305,7 @@ class Gomoku:
 
     def reset_board(self):
         self.pieces = [self.empty_char] * self.row * self.column
+        self.current_player = 1
 
     def all_filled(self):
         for i in range(len(self.pieces)):
